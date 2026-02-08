@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Worky Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+    h1 {
+      color: white;
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 2em;
+    }
+    
+    /* Stats */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .stat-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .stat-number {
+      font-size: 2.5em;
+      font-weight: 700;
+      color: #667eea;
+    }
+    .stat-label {
+      font-size: 0.9em;
+      color: #666;
+      margin-top: 8px;
+    }
+    
+    /* Card */
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .card h2 {
+      font-size: 1.4em;
+      color: #333;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    /* Filters */
+    .filters {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .filter-btn {
+      padding: 8px 16px;
+      border: 1px solid #ddd;
+      background: white;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.9em;
+      transition: all 0.2s;
+    }
+    .filter-btn:hover { background: #f5f5f5; }
+    .filter-btn.active {
+      background: #667eea;
+      color: white;
+      border-color: #667eea;
+    }
+    
+    /* Table */
+    .leads-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95em;
+    }
+    .leads-table th {
+      background: #f8f9fa;
+      padding: 12px;
+      text-align: left;
+      font-weight: 600;
+      color: #555;
+      border-bottom: 2px solid #eee;
+    }
+    .leads-table td {
+      padding: 12px;
+      border-bottom: 1px solid #eee;
+      color: #333;
+    }
+    .leads-table tr:hover {
+      background: #f8f9fa;
+    }
+    
+    /* Status badges */
+    .status-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 0.85em;
+      font-weight: 600;
+    }
+    .status-queue { background: #e3f2fd; color: #1976d2; }
+    .status-draft { background: #fff3e0; color: #f57c00; }
+    .status-sent { background: #e8f5e9; color: #388e3c; }
+    .status-replied { background: #f3e5f5; color: #7b1fa2; }
+    
+    /* Buttons */
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95em;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: #667eea;
+      color: white;
+    }
+    .btn-primary:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 0.85em;
+    }
+    
+    /* Updated timestamp */
+    .updated {
+      text-align: center;
+      color: rgba(255,255,255,0.8);
+      font-size: 0.85em;
+      margin-top: 20px;
+    }
+    
+    /* Links */
+    a { color: #667eea; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>💼 Worky Dashboard</h1>
+    
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-number" id="stat-queue">5</div>
+        <div class="stat-label">In Queue</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="stat-sent">5</div>
+        <div class="stat-label">Sent</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="stat-replied">0</div>
+        <div class="stat-label">Replies</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="stat-total">10</div>
+        <div class="stat-label">Total Leads</div>
+      </div>
+    </div>
+    
+    <!-- Job Leads -->
+    <div class="card">
+      <h2>🎯 Job Leads Pipeline</h2>
+      
+      <div class="filters">
+        <button class="filter-btn active" onclick="filterLeads('all')">All</button>
+        <button class="filter-btn" onclick="filterLeads('startup')">🚀 Startups</button>
+        <button class="filter-btn" onclick="filterLeads('enterprise')">🏢 Enterprise</button>
+        <span style="color:#ccc; margin: 0 8px;">|</span>
+        <button class="filter-btn" onclick="filterStatus('queue')">📋 Queue</button>
+        <button class="filter-btn" onclick="filterStatus('sent')">📧 Sent</button>
+        <button class="filter-btn" onclick="filterStatus('replied')">✅ Replied</button>
+      </div>
+      
+      <table class="leads-table" id="leadsTable">
+        <thead>
+          <tr>
+            <th>Company</th>
+            <th>Role</th>
+            <th>Pipeline</th>
+            <th>Source</th>
+            <th>Status</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody id="leadsBody">
+          <!-- Data loaded from JSON -->
+        </tbody>
+      </table>
+    </div>
+    
+    <div class="updated">
+      Last updated: <span id="lastUpdated">Feb 8, 2026</span>
+    </div>
+  </div>
+
+  <script>
+    // Job leads data - stored in GitHub, not localStorage
+    const LEADS = [
+      {
+        id: "1",
+        company: "Mistral AI",
+        role: "Product Operations Manager",
+        pipeline: "startup",
+        source: "Lever job board",
+        status: "queue",
+        notes: "5+ yrs exp, CoS/Strategy/Ops or consulting. Paris-based AI leader.",
+        url: "https://jobs.lever.co/mistral/ef656934-7246-4d93-b341-c907c348c444",
+        date: "2026-02-07"
+      },
+      {
+        id: "2",
+        company: "Blossom Health",
+        role: "Business Ops",
+        pipeline: "startup",
+        source: "TopStartups.io",
+        status: "queue",
+        notes: "AI for Psychiatry, NYC, early stage (1-10). Founded 2024.",
+        url: "https://joinblossomhealth.com",
+        date: "2026-02-07"
+      },
+      {
+        id: "3",
+        company: "Dataiku",
+        role: "Chief of Staff & Head of Strategic Initiatives",
+        pipeline: "enterprise",
+        source: "Greenhouse",
+        status: "queue",
+        notes: "CMO Office, marketing strategy ops.",
+        url: "https://job-boards.greenhouse.io/dataiku/jobs/5693140004",
+        date: "2026-02-07"
+      },
+      {
+        id: "4",
+        company: "Valence",
+        role: "Chief of Staff, People & Talent",
+        pipeline: "startup",
+        source: "Lever job board",
+        status: "queue",
+        notes: "AI-powered talent, hypergrowth.",
+        url: "https://jobs.lever.co/valence/b00a0d55-ca0c-4b32-a84d-0783b930c60a",
+        date: "2026-02-07"
+      },
+      {
+        id: "5",
+        company: "TrialSpark",
+        role: "Business Ops",
+        pipeline: "startup",
+        source: "TopStartups.io",
+        status: "queue",
+        notes: "Clinical trials, 1.9X faster enrollment. NYC, 101-200 employees.",
+        url: "https://www.trialspark.com/careers",
+        date: "2026-02-07"
+      },
+      {
+        id: "6",
+        company: "Suno",
+        role: "Strategy & Operations",
+        pipeline: "startup",
+        source: "Direct outreach",
+        status: "sent",
+        notes: "AI music generation, hypergrowth startup. Sent personalized email about scaling ops.",
+        url: "https://suno.ai",
+        date: "2026-02-07"
+      },
+      {
+        id: "7",
+        company: "PermitFlow",
+        role: "Operations/Strategy",
+        pipeline: "startup",
+        source: "Direct outreach",
+        status: "sent",
+        notes: "Construction permits automation. Y Combinator backed. Sent email about ops expertise.",
+        url: "https://www.permitflow.com",
+        date: "2026-02-07"
+      },
+      {
+        id: "8",
+        company: "Stainless",
+        role: "Business Operations",
+        pipeline: "startup",
+        source: "Direct outreach",
+        status: "sent",
+        notes: "Developer tools for API SDKs. Sent targeted email about growth ops.",
+        url: "https://www.stainlessapi.com",
+        date: "2026-02-07"
+      },
+      {
+        id: "9",
+        company: "Formation Bio",
+        role: "Strategic Operations",
+        pipeline: "enterprise",
+        source: "Direct outreach",
+        status: "sent",
+        notes: "Biotech/pharma tech platform. Sent email highlighting ops + healthcare background.",
+        url: "https://www.formationbio.com",
+        date: "2026-02-07"
+      },
+      {
+        id: "10",
+        company: "Vise",
+        role: "Operations",
+        pipeline: "enterprise",
+        source: "Direct outreach",
+        status: "sent",
+        notes: "AI wealth management. Sent email about scaling financial services ops.",
+        url: "https://www.vise.com",
+        date: "2026-02-07"
+      }
+    ];
+
+    let currentFilter = 'all';
+    let currentStatus = null;
+
+    function renderLeads() {
+      const tbody = document.getElementById('leadsBody');
+      const filtered = LEADS.filter(lead => {
+        if (currentFilter !== 'all' && lead.pipeline !== currentFilter) return false;
+        if (currentStatus && lead.status !== currentStatus) return false;
+        return true;
+      });
+
+      tbody.innerHTML = filtered.map(lead => `
+        <tr>
+          <td><strong>${lead.company}</strong></td>
+          <td>${lead.role}</td>
+          <td>${lead.pipeline === 'startup' ? '🚀' : '🏢'} ${lead.pipeline}</td>
+          <td>${lead.source}</td>
+          <td><span class="status-badge status-${lead.status}">${lead.status}</span></td>
+          <td>${lead.date}</td>
+        </tr>
+      `).join('');
+
+      updateStats();
+    }
+
+    function updateStats() {
+      document.getElementById('stat-queue').textContent = LEADS.filter(l => l.status === 'queue').length;
+      document.getElementById('stat-sent').textContent = LEADS.filter(l => l.status === 'sent').length;
+      document.getElementById('stat-replied').textContent = LEADS.filter(l => l.status === 'replied').length;
+      document.getElementById('stat-total').textContent = LEADS.length;
+    }
+
+    function filterLeads(type) {
+      currentFilter = type;
+      currentStatus = null;
+      document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      renderLeads();
+    }
+
+    function filterStatus(status) {
+      currentStatus = status;
+      currentFilter = 'all';
+      document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      renderLeads();
+    }
+
+    // Initial render
+    renderLeads();
+    document.getElementById('lastUpdated').textContent = new Date().toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  </script>
+</body>
+</html>
