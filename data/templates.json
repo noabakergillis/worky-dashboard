@@ -1,0 +1,34 @@
+[
+  {
+    "id": "ceo-cold",
+    "name": "Cold Outreach (CEO)",
+    "subject": "Quick question about {{role}} at {{company}}",
+    "body": "Hi {{contact_name}},\n\nI came across {{company}} via {{source}} and was impressed by {{specific_detail}}.\n\nI'm currently exploring strategy and operations roles at high-growth companies. Given my background in {{your_background}}, I'd love to learn more about {{company}}'s approach to {{relevant_area}}.\n\nWould you be open to a brief chat?\n\nBest,\n{{your_name}}",
+    "responseRate": 0.0,
+    "useCount": 0
+  },
+  {
+    "id": "recruiter-cold",
+    "name": "Cold Outreach (Recruiter)",
+    "subject": "Interested in {{role}} opportunities",
+    "body": "Hi {{contact_name}},\n\nI'm reaching out about potential {{role}} opportunities at {{company}}.\n\nI have {{years_exp}} years of experience in {{background}}, most recently at {{recent_company}}. I'm particularly drawn to {{company}} because of {{reason}}.\n\nWould love to connect if there are relevant openings.\n\nBest,\n{{your_name}}",
+    "responseRate": 0.0,
+    "useCount": 0
+  },
+  {
+    "id": "follow-up-1",
+    "name": "Follow-Up (No Response)",
+    "subject": "Re: {{original_subject}}",
+    "body": "Hi {{contact_name}},\n\nJust wanted to bump this to the top of your inbox. I know you're busy, but I'd still love to connect about opportunities at {{company}}.\n\nLet me know if now is a better time.\n\nBest,\n{{your_name}}",
+    "responseRate": 0.0,
+    "useCount": 0
+  },
+  {
+    "id": "thank-you",
+    "name": "Thank You (Post-Interview)",
+    "subject": "Thank you - {{role}} conversation",
+    "body": "Hi {{contact_name}},\n\nThank you for taking the time to speak with me today about the {{role}} role. I really enjoyed learning more about {{specific_topic}} and {{company}}'s approach to {{area}}.\n\nOur conversation reinforced my excitement about the opportunity. Please let me know if there's any additional information I can provide.\n\nLooking forward to next steps!\n\nBest,\n{{your_name}}",
+    "responseRate": 0.0,
+    "useCount": 0
+  }
+]

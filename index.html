@@ -2,391 +2,558 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Worky Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      min-height: 100vh;
-      padding: 20px;
-    }
-    .container { max-width: 1200px; margin: 0 auto; }
-    h1 {
-      color: white;
-      text-align: center;
-      margin-bottom: 20px;
-      font-size: 2em;
-    }
-    
-    /* Stats */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-    .stat-card {
-      background: white;
-      border-radius: 12px;
-      padding: 20px;
-      text-align: center;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    }
-    .stat-number {
-      font-size: 2.5em;
-      font-weight: 700;
-      color: #667eea;
-    }
-    .stat-label {
-      font-size: 0.9em;
-      color: #666;
-      margin-top: 8px;
-    }
-    
-    /* Card */
-    .card {
-      background: white;
-      border-radius: 16px;
-      padding: 24px;
-      margin-bottom: 20px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    }
-    .card h2 {
-      font-size: 1.4em;
-      color: #333;
-      margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    
-    /* Filters */
-    .filters {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
-    }
-    .filter-btn {
-      padding: 8px 16px;
-      border: 1px solid #ddd;
-      background: white;
-      border-radius: 20px;
-      cursor: pointer;
-      font-size: 0.9em;
-      transition: all 0.2s;
-    }
-    .filter-btn:hover { background: #f5f5f5; }
-    .filter-btn.active {
-      background: #667eea;
-      color: white;
-      border-color: #667eea;
-    }
-    
-    /* Table */
-    .leads-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.95em;
-    }
-    .leads-table th {
-      background: #f8f9fa;
-      padding: 12px;
-      text-align: left;
-      font-weight: 600;
-      color: #555;
-      border-bottom: 2px solid #eee;
-    }
-    .leads-table td {
-      padding: 12px;
-      border-bottom: 1px solid #eee;
-      color: #333;
-    }
-    .leads-table tr:hover {
-      background: #f8f9fa;
-    }
-    
-    /* Status badges */
-    .status-badge {
-      display: inline-block;
-      padding: 4px 12px;
-      border-radius: 12px;
-      font-size: 0.85em;
-      font-weight: 600;
-    }
-    .status-queue { background: #e3f2fd; color: #1976d2; }
-    .status-draft { background: #fff3e0; color: #f57c00; }
-    .status-sent { background: #e8f5e9; color: #388e3c; }
-    .status-replied { background: #f3e5f5; color: #7b1fa2; }
-    
-    /* Buttons */
-    .btn {
-      padding: 10px 20px;
-      border: none;
-      border-radius: 8px;
-      font-size: 0.95em;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .btn-primary {
-      background: #667eea;
-      color: white;
-    }
-    .btn-primary:hover {
-      background: #5568d3;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-    }
-    .btn-sm {
-      padding: 6px 12px;
-      font-size: 0.85em;
-    }
-    
-    /* Updated timestamp */
-    .updated {
-      text-align: center;
-      color: rgba(255,255,255,0.8);
-      font-size: 0.85em;
-      margin-top: 20px;
-    }
-    
-    /* Links */
-    a { color: #667eea; text-decoration: none; }
-    a:hover { text-decoration: underline; }
-  </style>
+  <title>Worky Dashboard V2</title>
+  <link rel="stylesheet" href="worky.css">
 </head>
-<body>
-  <div class="container">
-    <h1>💼 Worky Dashboard</h1>
-    
-    <!-- Stats -->
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-number" id="stat-queue">5</div>
-        <div class="stat-label">In Queue</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-number" id="stat-sent">5</div>
-        <div class="stat-label">Sent</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-number" id="stat-replied">0</div>
-        <div class="stat-label">Replies</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-number" id="stat-total">10</div>
-        <div class="stat-label">Total Leads</div>
-      </div>
-    </div>
-    
-    <!-- Job Leads -->
-    <div class="card">
-      <h2>🎯 Job Leads Pipeline</h2>
-      
-      <div class="filters">
-        <button class="filter-btn active" onclick="filterLeads('all')">All</button>
-        <button class="filter-btn" onclick="filterLeads('startup')">🚀 Startups</button>
-        <button class="filter-btn" onclick="filterLeads('enterprise')">🏢 Enterprise</button>
-        <span style="color:#ccc; margin: 0 8px;">|</span>
-        <button class="filter-btn" onclick="filterStatus('queue')">📋 Queue</button>
-        <button class="filter-btn" onclick="filterStatus('sent')">📧 Sent</button>
-        <button class="filter-btn" onclick="filterStatus('replied')">✅ Replied</button>
-      </div>
-      
-      <table class="leads-table" id="leadsTable">
-        <thead>
-          <tr>
-            <th>Company</th>
-            <th>Role</th>
-            <th>Pipeline</th>
-            <th>Source</th>
-            <th>Status</th>
-            <th>Date</th>
-          </tr>
-        </thead>
-        <tbody id="leadsBody">
-          <!-- Data loaded from JSON -->
-        </tbody>
-      </table>
-    </div>
-    
-    <div class="updated">
-      Last updated: <span id="lastUpdated">Feb 8, 2026</span>
+<body data-theme="dark">
+  <!-- Theme Toggle -->
+  <button class="theme-toggle" id="themeToggle" title="Toggle theme">
+    <span class="theme-icon">🌙</span>
+  </button>
+  
+  <!-- Command Palette (Cmd+K) -->
+  <div class="command-palette" id="commandPalette">
+    <div class="command-palette-content">
+      <input type="text" class="command-input" id="commandInput" placeholder="Type a command or search...">
+      <div class="command-results" id="commandResults"></div>
     </div>
   </div>
-
-  <script>
-    // Job leads data - stored in GitHub, not localStorage
-    const LEADS = [
-      {
-        id: "1",
-        company: "Mistral AI",
-        role: "Product Operations Manager",
-        pipeline: "startup",
-        source: "Lever job board",
-        status: "queue",
-        notes: "5+ yrs exp, CoS/Strategy/Ops or consulting. Paris-based AI leader.",
-        url: "https://jobs.lever.co/mistral/ef656934-7246-4d93-b341-c907c348c444",
-        date: "2026-02-07"
-      },
-      {
-        id: "2",
-        company: "Blossom Health",
-        role: "Business Ops",
-        pipeline: "startup",
-        source: "TopStartups.io",
-        status: "queue",
-        notes: "AI for Psychiatry, NYC, early stage (1-10). Founded 2024.",
-        url: "https://joinblossomhealth.com",
-        date: "2026-02-07"
-      },
-      {
-        id: "3",
-        company: "Dataiku",
-        role: "Chief of Staff & Head of Strategic Initiatives",
-        pipeline: "enterprise",
-        source: "Greenhouse",
-        status: "queue",
-        notes: "CMO Office, marketing strategy ops.",
-        url: "https://job-boards.greenhouse.io/dataiku/jobs/5693140004",
-        date: "2026-02-07"
-      },
-      {
-        id: "4",
-        company: "Valence",
-        role: "Chief of Staff, People & Talent",
-        pipeline: "startup",
-        source: "Lever job board",
-        status: "queue",
-        notes: "AI-powered talent, hypergrowth.",
-        url: "https://jobs.lever.co/valence/b00a0d55-ca0c-4b32-a84d-0783b930c60a",
-        date: "2026-02-07"
-      },
-      {
-        id: "5",
-        company: "TrialSpark",
-        role: "Business Ops",
-        pipeline: "startup",
-        source: "TopStartups.io",
-        status: "queue",
-        notes: "Clinical trials, 1.9X faster enrollment. NYC, 101-200 employees.",
-        url: "https://www.trialspark.com/careers",
-        date: "2026-02-07"
-      },
-      {
-        id: "6",
-        company: "Suno",
-        role: "Strategy & Operations",
-        pipeline: "startup",
-        source: "Direct outreach",
-        status: "sent",
-        notes: "AI music generation, hypergrowth startup. Sent personalized email about scaling ops.",
-        url: "https://suno.ai",
-        date: "2026-02-07"
-      },
-      {
-        id: "7",
-        company: "PermitFlow",
-        role: "Operations/Strategy",
-        pipeline: "startup",
-        source: "Direct outreach",
-        status: "sent",
-        notes: "Construction permits automation. Y Combinator backed. Sent email about ops expertise.",
-        url: "https://www.permitflow.com",
-        date: "2026-02-07"
-      },
-      {
-        id: "8",
-        company: "Stainless",
-        role: "Business Operations",
-        pipeline: "startup",
-        source: "Direct outreach",
-        status: "sent",
-        notes: "Developer tools for API SDKs. Sent targeted email about growth ops.",
-        url: "https://www.stainlessapi.com",
-        date: "2026-02-07"
-      },
-      {
-        id: "9",
-        company: "Formation Bio",
-        role: "Strategic Operations",
-        pipeline: "enterprise",
-        source: "Direct outreach",
-        status: "sent",
-        notes: "Biotech/pharma tech platform. Sent email highlighting ops + healthcare background.",
-        url: "https://www.formationbio.com",
-        date: "2026-02-07"
-      },
-      {
-        id: "10",
-        company: "Vise",
-        role: "Operations",
-        pipeline: "enterprise",
-        source: "Direct outreach",
-        status: "sent",
-        notes: "AI wealth management. Sent email about scaling financial services ops.",
-        url: "https://www.vise.com",
-        date: "2026-02-07"
-      }
-    ];
-
-    let currentFilter = 'all';
-    let currentStatus = null;
-
-    function renderLeads() {
-      const tbody = document.getElementById('leadsBody');
-      const filtered = LEADS.filter(lead => {
-        if (currentFilter !== 'all' && lead.pipeline !== currentFilter) return false;
-        if (currentStatus && lead.status !== currentStatus) return false;
-        return true;
-      });
-
-      tbody.innerHTML = filtered.map(lead => `
-        <tr>
-          <td><strong>${lead.company}</strong></td>
-          <td>${lead.role}</td>
-          <td>${lead.pipeline === 'startup' ? '🚀' : '🏢'} ${lead.pipeline}</td>
-          <td>${lead.source}</td>
-          <td><span class="status-badge status-${lead.status}">${lead.status}</span></td>
-          <td>${lead.date}</td>
-        </tr>
-      `).join('');
-
-      updateStats();
-    }
-
-    function updateStats() {
-      document.getElementById('stat-queue').textContent = LEADS.filter(l => l.status === 'queue').length;
-      document.getElementById('stat-sent').textContent = LEADS.filter(l => l.status === 'sent').length;
-      document.getElementById('stat-replied').textContent = LEADS.filter(l => l.status === 'replied').length;
-      document.getElementById('stat-total').textContent = LEADS.length;
-    }
-
-    function filterLeads(type) {
-      currentFilter = type;
-      currentStatus = null;
-      document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-      event.target.classList.add('active');
-      renderLeads();
-    }
-
-    function filterStatus(status) {
-      currentStatus = status;
-      currentFilter = 'all';
-      document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-      event.target.classList.add('active');
-      renderLeads();
-    }
-
-    // Initial render
-    renderLeads();
-    document.getElementById('lastUpdated').textContent = new Date().toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  </script>
+  
+  <!-- Context Menu -->
+  <div class="context-menu" id="contextMenu">
+    <div class="context-menu-item" data-action="email">📧 Draft Email</div>
+    <div class="context-menu-item" data-action="reminder">⏰ Set Reminder</div>
+    <div class="context-menu-item" data-action="hot">🔥 Mark as Hot</div>
+    <div class="context-menu-item" data-action="interview">🎯 Move to Interview</div>
+    <div class="context-menu-item" data-action="research">🔍 Research Contact</div>
+    <div class="context-menu-item" data-action="intel">💡 View Company Intel</div>
+    <div class="context-menu-divider"></div>
+    <div class="context-menu-item" data-action="archive">📦 Archive</div>
+    <div class="context-menu-item danger" data-action="delete">🗑️ Delete</div>
+  </div>
+  
+  <div class="sidebar">
+    <div class="logo">
+      <span class="logo-icon">💼</span>
+      <h1>Worky</h1>
+      <span class="version">v2.0</span>
+    </div>
+    
+    <nav class="nav">
+      <a class="nav-item active" data-section="overview">
+        <span class="nav-icon">🏠</span>
+        <span>Overview</span>
+        <kbd class="shortcut">1</kbd>
+      </a>
+      <a class="nav-item" data-section="jobsearch">
+        <span class="nav-icon">🎯</span>
+        <span>Job Search</span>
+        <kbd class="shortcut">2</kbd>
+      </a>
+      <a class="nav-item" data-section="analytics">
+        <span class="nav-icon">📊</span>
+        <span>Analytics</span>
+        <kbd class="shortcut">3</kbd>
+      </a>
+      <a class="nav-item" data-section="interviews">
+        <span class="nav-icon">🎤</span>
+        <span>Interviews</span>
+        <kbd class="shortcut">4</kbd>
+      </a>
+      <a class="nav-item" data-section="hearing">
+        <span class="nav-icon">🎧</span>
+        <span>Hearing Project</span>
+        <kbd class="shortcut">5</kbd>
+      </a>
+    </nav>
+    
+    <div class="sidebar-footer">
+      <a class="chat-link" href="http://127.0.0.1:18789/?session=agent:work:main">
+        💬 Chat with Worky
+      </a>
+      <div class="keyboard-help" id="keyboardHelp">
+        <span class="help-icon">⌨️</span>
+        <span>Press <kbd>/</kbd> to search</span>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Floating Chat Button -->
+  <a href="http://127.0.0.1:18789/?session=agent:work:main" class="floating-chat-btn" title="Chat with Worky">
+    💬
+  </a>
+  
+  <div class="main">
+    <!-- OVERVIEW -->
+    <div class="section active" id="overview">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Worky Dashboard</h1>
+          <p class="page-subtitle" id="currentDate">Loading...</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-ghost" id="syncBtn" title="Sync with GitHub">
+            <span class="sync-icon">🔄</span> Sync
+          </button>
+          <a href="http://127.0.0.1:18789/?session=agent:work:main" class="btn btn-chat">
+            💬 Chat
+          </a>
+        </div>
+      </div>
+      
+      <!-- Weekly Digest -->
+      <div class="digest-card" id="weeklyDigest">
+        <div class="digest-header">
+          <span class="digest-title">📈 Weekly Digest</span>
+          <span class="digest-date" id="digestDate"></span>
+        </div>
+        <div class="digest-content" id="digestContent"></div>
+      </div>
+      
+      <div class="overview-cards">
+        <div class="overview-card" data-goto="jobsearch">
+          <div class="overview-card-icon">🎯</div>
+          <div class="overview-card-title">Job Search</div>
+          <div class="overview-card-stats">
+            <span class="stat-mini" id="overview-queue">0 in queue</span>
+            <span class="stat-mini" id="overview-sent">0 sent</span>
+            <span class="stat-mini hot" id="overview-hot">0 hot</span>
+          </div>
+        </div>
+        
+        <div class="overview-card" data-goto="analytics">
+          <div class="overview-card-icon">📊</div>
+          <div class="overview-card-title">Analytics</div>
+          <div class="overview-card-stats">
+            <span class="stat-mini" id="overview-response-rate">0% response</span>
+            <span class="stat-mini" id="overview-this-week">0 this week</span>
+          </div>
+        </div>
+        
+        <div class="overview-card" data-goto="interviews">
+          <div class="overview-card-icon">🎤</div>
+          <div class="overview-card-title">Active Interviews</div>
+          <div class="overview-card-stats">
+            <span class="stat-mini" id="overview-interviews">0 in pipeline</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="section-header">🔥 Actions Required</div>
+      <div class="tasks-section" id="overview-tasks"></div>
+      
+      <div class="section-header">⏰ Follow-Ups Due</div>
+      <div class="followups-list" id="overview-followups"></div>
+    </div>
+    
+    <!-- JOB SEARCH -->
+    <div class="section" id="jobsearch">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Job Search</h1>
+          <p class="page-subtitle">Manage your outreach pipeline</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn" id="addLeadBtn">+ New Lead <kbd>N</kbd></button>
+        </div>
+      </div>
+      
+      <!-- Global Search -->
+      <div class="search-bar">
+        <input type="text" class="search-input" id="globalSearch" placeholder="Search companies, contacts, notes... (press / to focus)">
+        <div class="search-filters">
+          <select class="filter-select" id="pipelineFilter">
+            <option value="all">All Pipelines</option>
+            <option value="startup">🚀 Startups</option>
+            <option value="enterprise">🏢 Enterprise</option>
+          </select>
+          <select class="filter-select" id="statusFilter">
+            <option value="all">All Statuses</option>
+            <option value="queue">📋 Queue</option>
+            <option value="draft">📝 Draft</option>
+            <option value="sent">📧 Sent</option>
+            <option value="replied">✅ Replied</option>
+            <option value="interview">🎤 Interview</option>
+          </select>
+          <button class="btn btn-ghost" id="saveFilterBtn">💾 Save Filter</button>
+        </div>
+      </div>
+      
+      <!-- Sub-navigation tabs -->
+      <div class="sub-nav" id="job-sub-nav">
+        <button class="sub-nav-btn active" data-subtab="pipeline">📊 Pipeline</button>
+        <button class="sub-nav-btn" data-subtab="outreach">📧 Outreach</button>
+        <button class="sub-nav-btn" data-subtab="submitted">✅ Submitted</button>
+        <button class="sub-nav-btn" data-subtab="rejected">❌ Rejected</button>
+      </div>
+      
+      <!-- Pipeline Sub-tab -->
+      <div class="sub-section active" id="pipeline">
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-label">🚀 Startup Queue</div>
+            <div class="stat-value green" id="stat-startup-queue">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">🏢 Enterprise Queue</div>
+            <div class="stat-value blue" id="stat-enterprise-queue">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">📧 Emails Sent</div>
+            <div class="stat-value purple" id="stat-sent">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">✅ Replies</div>
+            <div class="stat-value green" id="stat-replies">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">🔥 Hot Leads</div>
+            <div class="stat-value orange" id="stat-hot">0</div>
+          </div>
+        </div>
+        
+        <div class="hot-section" id="hot-section">
+          <div class="hot-title">🔥 Hot Leads — Action Required</div>
+          <div id="hot-items"></div>
+        </div>
+        
+        <div class="queues-grid">
+          <div class="queue-box">
+            <div class="queue-header">
+              <span class="queue-title">🚀 Startup Scout Queue</span>
+              <span class="queue-count" id="startup-queue-count">0</span>
+            </div>
+            <div class="queue-items" id="startup-queue-items"></div>
+          </div>
+          
+          <div class="queue-box">
+            <div class="queue-header">
+              <span class="queue-title">🏢 Enterprise Hunter Queue</span>
+              <span class="queue-count" id="enterprise-queue-count">0</span>
+            </div>
+            <div class="queue-items" id="enterprise-queue-items"></div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Outreach Sub-tab -->
+      <div class="sub-section" id="outreach">
+        <table class="outreach-table">
+          <thead>
+            <tr>
+              <th>Company</th>
+              <th>Contact</th>
+              <th>Pipeline</th>
+              <th>Status</th>
+              <th>Follow-Up</th>
+              <th>Network</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="outreach-tbody"></tbody>
+        </table>
+      </div>
+      
+      <!-- Submitted Sub-tab -->
+      <div class="sub-section" id="submitted">
+        <table class="outreach-table">
+          <thead>
+            <tr>
+              <th>Company</th>
+              <th>Role</th>
+              <th>Applied</th>
+              <th>Status</th>
+              <th>Notes</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="submitted-tbody"></tbody>
+        </table>
+        <button class="btn" id="add-application-btn">+ Add Application</button>
+      </div>
+      
+      <!-- Rejected Sub-tab -->
+      <div class="sub-section" id="rejected">
+        <table class="outreach-table">
+          <thead>
+            <tr>
+              <th>Company</th>
+              <th>Role</th>
+              <th>Rejected</th>
+              <th>Reason</th>
+            </tr>
+          </thead>
+          <tbody id="rejected-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+    
+    <!-- ANALYTICS -->
+    <div class="section" id="analytics">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">📊 Response Analytics</h1>
+          <p class="page-subtitle">Track what's working</p>
+        </div>
+      </div>
+      
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-label">Overall Response Rate</div>
+          <div class="stat-value green" id="analytics-response-rate">0%</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Avg Time to Response</div>
+          <div class="stat-value blue" id="analytics-avg-time">0 days</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">This Week</div>
+          <div class="stat-value purple" id="analytics-this-week">0 sent</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Best Template</div>
+          <div class="stat-value orange" id="analytics-best-template">—</div>
+        </div>
+      </div>
+      
+      <div class="analytics-grid">
+        <div class="chart-card">
+          <h3>Response Rate by Pipeline</h3>
+          <canvas id="pipelineChart"></canvas>
+        </div>
+        <div class="chart-card">
+          <h3>Response Rate by Contact Type</h3>
+          <canvas id="contactChart"></canvas>
+        </div>
+        <div class="chart-card">
+          <h3>Activity Over Time</h3>
+          <canvas id="timelineChart"></canvas>
+        </div>
+        <div class="insights-card">
+          <h3>💡 What's Working</h3>
+          <div id="insightsContent"></div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- INTERVIEWS -->
+    <div class="section" id="interviews">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">🎤 Interview Pipeline</h1>
+          <p class="page-subtitle">Active interview processes</p>
+        </div>
+      </div>
+      
+      <div class="kanban-board">
+        <div class="kanban-column">
+          <div class="kanban-header">
+            <span class="kanban-title">📞 Screening</span>
+            <span class="kanban-count" id="count-screening">0</span>
+          </div>
+          <div class="kanban-items" id="stage-screening" data-stage="screening"></div>
+        </div>
+        
+        <div class="kanban-column">
+          <div class="kanban-header">
+            <span class="kanban-title">💻 Technical</span>
+            <span class="kanban-count" id="count-technical">0</span>
+          </div>
+          <div class="kanban-items" id="stage-technical" data-stage="technical"></div>
+        </div>
+        
+        <div class="kanban-column">
+          <div class="kanban-header">
+            <span class="kanban-title">👔 Hiring Manager</span>
+            <span class="kanban-count" id="count-manager">0</span>
+          </div>
+          <div class="kanban-items" id="stage-manager" data-stage="manager"></div>
+        </div>
+        
+        <div class="kanban-column">
+          <div class="kanban-header">
+            <span class="kanban-title">🏆 Final Round</span>
+            <span class="kanban-count" id="count-final">0</span>
+          </div>
+          <div class="kanban-items" id="stage-final" data-stage="final"></div>
+        </div>
+        
+        <div class="kanban-column">
+          <div class="kanban-header">
+            <span class="kanban-title">🎉 Offer</span>
+            <span class="kanban-count" id="count-offer">0</span>
+          </div>
+          <div class="kanban-items" id="stage-offer" data-stage="offer"></div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- HEARING PROJECT -->
+    <div class="section" id="hearing">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Hearing Project</h1>
+          <p class="page-subtitle">Research & Development</p>
+        </div>
+        <button class="btn" id="save-notes-btn">💾 Save Notes</button>
+      </div>
+      
+      <div class="section-header">📝 Project Notes</div>
+      <textarea class="note-area" id="hearing-notes" placeholder="Project notes, research, ideas..."></textarea>
+      
+      <div class="section-header">✅ Tasks</div>
+      <div class="tasks-section" id="hearing-tasks"></div>
+    </div>
+  </div>
+  
+  <!-- Lead Modal -->
+  <div class="modal" id="leadModal">
+    <div class="modal-content">
+      <h3 class="modal-title" id="leadModalTitle">Add Lead</h3>
+      <form id="leadForm">
+        <input type="hidden" id="leadId" value="">
+        <input type="hidden" id="leadPipeline" value="startup">
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Company *</label>
+            <input type="text" class="form-input" id="leadCompany" required>
+            <button type="button" class="btn-inline btn-sm" id="findContactBtn">🔍 Find Contact</button>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Role</label>
+            <input type="text" class="form-input" id="leadRole">
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Contact Name</label>
+            <input type="text" class="form-input" id="leadContact">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Title</label>
+            <input type="text" class="form-input" id="leadTitle">
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-input" id="leadEmail">
+          </div>
+          <div class="form-group">
+            <label class="form-label">LinkedIn</label>
+            <input type="text" class="form-input" id="leadLinkedIn">
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Source</label>
+            <input type="text" class="form-input" id="leadSource">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Status</label>
+            <select class="form-select" id="leadStatus">
+              <option value="queue">In Queue</option>
+              <option value="draft">Draft Ready</option>
+              <option value="sent">Email Sent</option>
+              <option value="replied">Replied</option>
+              <option value="interview">Interviewing</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Email Template</label>
+          <select class="form-select" id="emailTemplate">
+            <option value="">— Select Template —</option>
+          </select>
+          <button type="button" class="btn-inline btn-sm" id="previewTemplateBtn">👁️ Preview</button>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Notes</label>
+          <textarea class="form-textarea" id="leadNotes"></textarea>
+        </div>
+        
+        <div class="modal-actions">
+          <button type="submit" class="btn">Save Lead</button>
+          <button type="button" class="btn btn-ghost" id="modal-cancel-btn">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Company Intel Panel -->
+  <div class="side-panel" id="companyPanel">
+    <div class="panel-header">
+      <h3 id="panelCompanyName">Company Intel</h3>
+      <button class="panel-close" id="closePanel">×</button>
+    </div>
+    <div class="panel-content" id="panelContent">
+      <div class="intel-loading">Loading company data...</div>
+    </div>
+  </div>
+  
+  <!-- Activity Timeline Modal -->
+  <div class="modal" id="timelineModal">
+    <div class="modal-content timeline-modal">
+      <h3 class="modal-title">📅 Activity Timeline</h3>
+      <div id="timelineContent"></div>
+      <button class="btn btn-ghost" id="closeTimelineBtn">Close</button>
+    </div>
+  </div>
+  
+  <!-- Application Modal -->
+  <div class="modal" id="appModal">
+    <div class="modal-content">
+      <h3 class="modal-title">Add Application</h3>
+      <form id="appForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Company *</label>
+            <input type="text" class="form-input" id="appCompany" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Role *</label>
+            <input type="text" class="form-input" id="appRole" required>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Applied Date</label>
+            <input type="date" class="form-input" id="appDate">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Status</label>
+            <select class="form-select" id="appStatus">
+              <option value="applied">Applied</option>
+              <option value="screening">Screening</option>
+              <option value="interviewing">Interviewing</option>
+              <option value="offer">Offer</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Notes / Link</label>
+          <textarea class="form-textarea" id="appNotes"></textarea>
+        </div>
+        
+        <div class="modal-actions">
+          <button type="submit" class="btn">Add Application</button>
+          <button type="button" class="btn btn-ghost" id="app-modal-cancel-btn">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <div id="toast"></div>
+  
+  <script src="worky.js"></script>
 </body>
 </html>
