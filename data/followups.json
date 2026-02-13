@@ -1,1 +1,35 @@
-[]
+[
+  {
+    "id": "email-64450-shai-referral",
+    "date": "2026-02-13",
+    "subject": "Gedalia Gillis searching for his next challenge",
+    "from": "Shai Kivity <shaikivity@gmail.com>",
+    "type": "thank-you",
+    "priority": "high",
+    "description": "Friend referral blast to talpinet group - needs thank you response",
+    "gmailLink": "https://mail.google.com/mail/u/0/#inbox/64450",
+    "status": "pending"
+  },
+  {
+    "id": "email-64435-sprypoint-bounce",
+    "date": "2026-02-13",
+    "subject": "Bounce: tiffany.cleaver@sprypoint.com",
+    "from": "Mail Delivery Subsystem",
+    "type": "fix-contact",
+    "priority": "medium",
+    "description": "Outreach email bounced - need to find correct contact at SpryPoint",
+    "gmailLink": "https://mail.google.com/mail/u/0/#inbox/64435",
+    "status": "pending"
+  },
+  {
+    "id": "email-64404-formation-bounce",
+    "date": "2026-02-13",
+    "subject": "Bounce: kgrice@formation.bio",
+    "from": "Mail Delivery Subsystem",
+    "type": "fix-contact",
+    "priority": "medium",
+    "description": "Formation Bio email bounced - need to find correct contact (Kevin Grice)",
+    "gmailLink": "https://mail.google.com/mail/u/0/#inbox/64404",
+    "status": "pending"
+  }
+]
